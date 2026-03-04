@@ -1,50 +1,66 @@
-"""
-数据预处理脚本
+import os
+from PIL import Image
 
-功能：
-    1. 读取 data/raw/ 目录中的原始图片
-    2. 将图片裁剪 / Resize 至 512×512（中心裁剪，保持宽高比）
-    3. 统一重命名为 duck_XXXX.jpg 格式
-    4. 输出至 data/processed/ 目录
+# 自动定位项目根目录，确保路径绝对安全
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RAW_DIR = os.path.join(BASE_DIR, "data", "raw")
+PROCESSED_DIR = os.path.join(BASE_DIR, "data", "processed")
 
-使用方式：
-    python src/data_prep.py
-    
-    或指定自定义路径：
-    python src/data_prep.py --input_dir data/raw --output_dir data/processed --size 512
+os.makedirs(PROCESSED_DIR, exist_ok=True)
 
-TODO:
-    - [ ] 实现中心裁剪逻辑
-    - [ ] 添加图片质量过滤（模糊图片排除）
-    - [ ] 添加数据增强选项（水平翻转）
-"""
+def process_images():
+    # 支持的图片格式
+    valid_extensions = {".jpg", ".jpeg", ".png", ".webp"}
+    files = [f for f in os.listdir(RAW_DIR) if os.path.splitext(f)[1].lower() in valid_extensions]
 
-# import os
-# import argparse
-# from pathlib import Path
-# from PIL import Image
-# from tqdm import tqdm
+    if not files:
+        print(f"❌ 在 {RAW_DIR} 中没有找到图片，请检查路径。")
+        return
 
-TARGET_SIZE = 512  # 目标图像边长（px）
-INPUT_DIR = "data/raw"
-OUTPUT_DIR = "data/processed"
+    for i, filename in enumerate(files):
+        img_path = os.path.join(RAW_DIR, filename)
+        try:
+            # 1. 打开图片并转为 RGBA（保留可能存在的透明通道）
+            img = Image.open(img_path).convert("RGBA")
 
+            # 2. 创建一个 512x512 的纯白底图 (画布)
+            target_size = 512
+            canvas = Image.new("RGB", (target_size, target_size), (0, 0, 0))
 
-def center_crop_and_resize(image: "Image.Image", size: int) -> "Image.Image":
-    """将图片中心裁剪为正方形并 Resize 到指定尺寸。"""
-    # TODO: 实现中心裁剪
-    pass
+            # 3. 计算等比例放大/缩小的尺寸，让最长边变成 512
+            img_ratio = img.width / img.height
+            if img_ratio > 1:
+                new_w = target_size
+                new_h = int(target_size / img_ratio)
+            else:
+                new_h = target_size
+                new_w = int(target_size * img_ratio)
 
+            # 4. 缩放原图 (使用 LANCZOS 算法保证最高画质)
+            img_resized = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
 
-def process_images(input_dir: str, output_dir: str, size: int = TARGET_SIZE):
-    """批量处理目录中的所有图片。"""
-    # TODO: 实现批处理逻辑
-    pass
+            # 5. 处理透明背景：将缩放后的图贴在纯白背景上，去掉透明度
+            black_bg = Image.new("RGBA", img_resized.size, (0, 0, 0, 255))
+            img_with_bg = Image.alpha_composite(black_bg, img_resized).convert("RGB")
 
+            # 6. 计算居中粘贴的坐标
+            paste_x = (target_size - new_w) // 2
+            paste_y = (target_size - new_h) // 2
+
+            # 7. 将处理好的图片贴到 512x512 画布的中央
+            canvas.paste(img_with_bg, (paste_x, paste_y))
+
+            # 8. 保存并规范重命名为 buya_01.jpg, buya_02.jpg...
+            output_filename = f"buya_{i+1:02d}.jpg"
+            output_path = os.path.join(PROCESSED_DIR, output_filename)
+            canvas.save(output_path, "JPEG", quality=95)
+
+            print(f"✅ 成功处理: {filename} -> {output_filename}")
+
+        except Exception as e:
+            print(f"❌ 处理 {filename} 时出错: {e}")
 
 if __name__ == "__main__":
-    print(f"数据预处理脚本框架已就绪。")
-    print(f"  输入目录：{INPUT_DIR}")
-    print(f"  输出目录：{OUTPUT_DIR}")
-    print(f"  目标尺寸：{TARGET_SIZE}×{TARGET_SIZE}")
-    # process_images(INPUT_DIR, OUTPUT_DIR, TARGET_SIZE)
+    print("🚀 开始处理不鸭数据集...")
+    process_images()
+    print(f"🎉 处理完成！所有标准训练图已保存至 {PROCESSED_DIR}")
