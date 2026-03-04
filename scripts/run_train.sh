@@ -60,25 +60,25 @@ echo "================================================"
 # -------------------------
 # 执行训练（待解注释）
 # -------------------------
-# accelerate launch "${PROJECT_ROOT}/src/train_dreambooth_boft.py" \
-#     --pretrained_model_name_or_path="${PRETRAINED_MODEL}" \
-#     --instance_data_dir="${INSTANCE_DATA_DIR}" \
-#     --output_dir="${OUTPUT_DIR}" \
-#     --logging_dir="${LOGGING_DIR}" \
-#     --instance_prompt="${INSTANCE_PROMPT}" \
-#     --resolution=${RESOLUTION} \
-#     --train_batch_size=${TRAIN_BATCH_SIZE} \
-#     --max_train_steps=${MAX_TRAIN_STEPS} \
-#     --learning_rate=${LEARNING_RATE} \
-#     --lr_scheduler="${LR_SCHEDULER}" \
-#     --lr_warmup_steps=${LR_WARMUP_STEPS} \
-#     --use_boft \
-#     --boft_block_num=${BOFT_BLOCK_NUM} \
-#     --boft_block_size=${BOFT_BLOCK_SIZE} \
-#     --boft_n_butterfly_factor=${BOFT_N_BUTTERFLY_FACTOR} \
-#     --boft_dropout=${BOFT_DROPOUT} \
-#     --checkpointing_steps=${CHECKPOINTING_STEPS} \
-#     --validation_steps=${VALIDATION_STEPS} \
-#     --report_to="tensorboard"
+accelerate launch "${PROJECT_ROOT}/src/train_dreambooth_boft.py" \
+    --pretrained_model_name_or_path="${PRETRAINED_MODEL}" \
+    --instance_data_dir="${INSTANCE_DATA_DIR}" \
+    --output_dir="${OUTPUT_DIR}" \
+    --logging_dir="${LOGGING_DIR}" \
+    --instance_prompt="${INSTANCE_PROMPT}" \
+    --resolution=${RESOLUTION} \
+    --train_batch_size=${TRAIN_BATCH_SIZE} \
+    --max_train_steps=${MAX_TRAIN_STEPS} \
+    --learning_rate=${LEARNING_RATE} \
+    --lr_scheduler="${LR_SCHEDULER}" \
+    --lr_warmup_steps=${LR_WARMUP_STEPS} \
+    --use_boft \
+    --boft_block_num=${BOFT_BLOCK_NUM} \
+    --boft_block_size=${BOFT_BLOCK_SIZE} \
+    --boft_n_butterfly_factor=${BOFT_N_BUTTERFLY_FACTOR} \
+    --boft_dropout=${BOFT_DROPOUT} \
+    --checkpointing_steps=${CHECKPOINTING_STEPS} \
+    --validation_steps=${VALIDATION_STEPS} \
+    --report_to="tensorboard"
 
 echo "训练脚本框架已就绪，解注释上方命令后即可在 4090 上运行。"
