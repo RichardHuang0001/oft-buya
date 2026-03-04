@@ -1,62 +1,39 @@
-"""
-推理脚本 —— 生成 Before / After 对比图
+import os
+import torch
+from diffusers import StableDiffusionPipeline
 
-功能：
-    - before 模式：使用基座模型（无微调）生成图片，保存至 outputs/images/before_ft/
-    - after  模式：加载 OFT 权重后生成图片，保存至 outputs/images/after_ft/
+output_dir = "outputs/images/before_ft"
+model_id = "jinaai/flat-2d-animerge"
 
-使用方式：
-    # 微调前（使用基座模型）
-    python src/inference.py --mode before
+# 这里的提示词必须和我们等会儿训练时用的保持完全一致！
+prompt = "a 2d cartoon illustration of [V] duck, flat colors, black background"
+negative_prompt = "3d, realistic, photorealistic, worst quality, low quality"
 
-    # 微调后（加载 OFT 权重）
-    python src/inference.py --mode after --weights_path outputs/models/boft-run-01
+print(f"🚀 正在加载基座模型 {model_id} ...")
+print("💡 第一次运行会自动下载模型权重，大概需要几分钟，请耐心等待。")
 
-TODO:
-    - [ ] 实现 pipeline 加载与推理逻辑
-    - [ ] 支持批量生成（--num_images 参数）
-    - [ ] 添加 seed 固定，便于 Before/After 公平对比
-    - [ ] 生成结果拼图（4宫格）并保存至 report/figures/
-"""
+# 加载模型并发送到显卡 (使用 fp16 节省显存并提速)
+pipe = StableDiffusionPipeline.from_pretrained(
+    model_id,
+    torch_dtype=torch.float16,
+    safety_checker=None
+).to("cuda")
 
-# import torch
-# import argparse
-# from pathlib import Path
-# from diffusers import StableDiffusionPipeline
+print("🎨 模型加载完毕，开始生成微调前的对比图...")
 
-BASE_MODEL = "runwayml/stable-diffusion-v1-5"
-PROMPT = "a photo of sks duck in a park, photorealistic"  # 推理使用的 prompt
-NEGATIVE_PROMPT = "blurry, low quality, cartoon"
-NUM_IMAGES = 4          # 每次生成图片数量
-SEED = 42               # 随机种子（固定，便于复现对比）
+# 生成 3 张不同随机种子的图片作为报告素材
+for i in range(3):
+    generator = torch.Generator("cuda").manual_seed(42 + i)
+    image = pipe(
+        prompt=prompt,
+        negative_prompt=negative_prompt,
+        num_inference_steps=30,
+        guidance_scale=7.5,
+        generator=generator
+    ).images[0]
+    
+    save_path = os.path.join(output_dir, f"before_ft_{i+1}.jpg")
+    image.save(save_path)
+    print(f"✅ 成功保存: {save_path}")
 
-OUTPUT_DIRS = {
-    "before": "outputs/images/before_ft",
-    "after":  "outputs/images/after_ft",
-}
-
-
-def load_pipeline(mode: str, weights_path: str = None):
-    """加载推理 Pipeline。"""
-    # TODO: 实现 pipeline 加载
-    pass
-
-
-def generate_images(pipeline, output_dir: str, num_images: int = NUM_IMAGES):
-    """批量生成并保存图片。"""
-    # TODO: 实现图片生成与保存
-    pass
-
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description="Before / After 推理对比")
-    parser.add_argument("--mode", choices=["before", "after"], required=True,
-                        help="before: 基座模型 | after: 微调后模型")
-    parser.add_argument("--weights_path", type=str, default=None,
-                        help="OFT 权重路径（--mode after 时需要指定）")
-    args = parser.parse_args()
-
-    print(f"推理模式：{args.mode}")
-    print(f"输出目录：{OUTPUT_DIRS[args.mode]}")
-    print("推理脚本框架已就绪，请填充具体推理逻辑。")
+print("🎉 基线测试完成！")
