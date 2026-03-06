@@ -1,0 +1,23 @@
+重置代理
+unset http_proxy https_proxy all_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY
+
+# 新建会话
+tmux new -s 会话名
+
+# 列出所有会话
+tmux ls
+
+# 进入/附着会话
+tmux a -t 会话名
+tmux attach -t 会话名
+
+# 退出当前会话（不关闭）
+前缀 + d
+
+# 关闭会话
+tmux kill-session -t 会话名
+
+# 关闭所有会话
+tmux kill-server
+
+CUDA_VISIBLE_DEVICES=4
