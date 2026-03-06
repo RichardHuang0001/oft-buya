@@ -8,7 +8,7 @@ os.makedirs(output_dir, exist_ok=True)
 model_id = "jinaai/flat-2d-animerge"
 
 # 因为我们在训练时默认设置了 500 步保存一次，所以我们去加载 checkpoint 500 的权重
-adapter_dir = "outputs/models/unet/800" 
+adapter_dir = "outputs/models/unet/800/oft_buya_run" 
 
 prompt = "a 2d cartoon illustration of [V] duck, flat colors, black background"
 negative_prompt = "3d, realistic, photorealistic, worst quality, low quality"
