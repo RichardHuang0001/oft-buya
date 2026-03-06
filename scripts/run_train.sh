@@ -9,6 +9,7 @@ accelerate launch src/train_dreambooth_boft.py \
   --instance_data_dir="data/processed" \
   --output_dir="outputs/models" \
   --instance_prompt="a 2d cartoon illustration of [V] duck, flat colors, black background" \
+  --validation_prompt="a 2d cartoon illustration of [V] duck, flat colors, black background" \
   --resolution=512 \
   --train_batch_size=2 \
   --gradient_accumulation_steps=1 \
@@ -18,7 +19,6 @@ accelerate launch src/train_dreambooth_boft.py \
   --max_train_steps=800 \
   --use_8bit_adam \
   --report_to="tensorboard" \
-  --logging_dir="outputs/logs" \
   --seed="42"
 
 echo "🎉 训练完成！OFT 权重已保存至 outputs/models"

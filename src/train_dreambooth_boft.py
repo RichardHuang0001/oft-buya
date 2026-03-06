@@ -90,7 +90,7 @@ def main(args):
         gradient_accumulation_steps=args.gradient_accumulation_steps,
         mixed_precision=args.mixed_precision,
         log_with=args.report_to,
-        project_dir=accelerator_project_config,
+        project_config=accelerator_project_config,
     )
     if args.report_to == "wandb":
         import wandb
@@ -389,7 +389,7 @@ def main(args):
     # We need to initialize the trackers we use, and also store our configuration.
     # The trackers initializes automatically on the main process.
     if accelerator.is_main_process:
-        accelerator.init_trackers(args.wandb_project_name, config=vars(args), init_kwargs=wandb_init)
+        accelerator.init_trackers(args.wandb_project_name, config=vars(args), init_kwargs={})
 
     # Train!
     total_batch_size = args.train_batch_size * accelerator.num_processes * args.gradient_accumulation_steps
