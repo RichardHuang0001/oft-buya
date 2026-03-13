@@ -13,8 +13,8 @@ accelerate launch src/train_dreambooth_boft.py \
   --pretrained_model_name_or_path="jinaai/flat-2d-animerge" \
   --instance_data_dir="data/processed" \
   --output_dir="outputs/models" \
-  --instance_prompt="a 2d cartoon illustration of [V] duck, flat colors, black background" \
-  --validation_prompt="a 2d cartoon illustration of [V] duck, flat colors, black background" \
+  --instance_prompt="a 2d cartoon illustration of sks duck, flat colors, black background" \
+  --validation_prompt="a 2d cartoon illustration of sks duck, flat colors, black background" \
   --resolution=512 \
   --train_batch_size=2 \
   --gradient_accumulation_steps=1 \
