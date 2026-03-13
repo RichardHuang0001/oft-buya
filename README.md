@@ -1,3 +1,8 @@
+<div align="right">
+  <a href="./README.md"><img src="https://img.shields.io/badge/lang-English-blue?style=flat-square" /></a>
+  <a href="./README_zh.md"><img src="https://img.shields.io/badge/语言-中文-red?style=flat-square" /></a>
+</div>
+
 # oft-buya
 
 Fine-tuning Stable Diffusion on the "Buya" duck character using [BOFT](https://arxiv.org/abs/2311.06243) (Butterfly Orthogonal Fine-Tuning) via DreamBooth.
