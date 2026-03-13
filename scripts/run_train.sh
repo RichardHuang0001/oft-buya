@@ -7,7 +7,7 @@ unset HTTP_PROXY HTTPS_PROXY ALL_PROXY
 export HF_ENDPOINT=https://hf-mirror.com
 export CUDA_VISIBLE_DEVICES=4
 
-echo "🚀 开始基于 flat-2d-animerge 训练真正的 OFT 不鸭模型 (运行在 GPU 4 上)..."
+echo "🚀 开始基于 flat-2d-animerge 训练 OFT 不鸭模型..."
 
 accelerate launch src/train_dreambooth_boft.py \
   --pretrained_model_name_or_path="jinaai/flat-2d-animerge" \
